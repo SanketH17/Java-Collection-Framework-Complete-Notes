@@ -157,31 +157,7 @@ Output:
 
 ### The Big Picture
 
-```
-                     java.lang.Iterable<E>
-                             |
-                     java.util.Collection<E>
-                             |
-            +----------------+----------------+
-            |                |                |
-         List<E>           Set<E>          Queue<E>
-            |                |                |
-    +-------+------+    +----+----+      +----+--------+
-    |        |     |    |         |      |             |
-ArrayList LinkedList  HashSet  TreeSet PriorityQueue ArrayDeque
-  Vector  CopyOnWrite    |
-            ArrayList LinkedHashSet
-
-       --- separate root (NOT a Collection) ---
-
-                     java.util.Map<K,V>
-                             |
-            +----------------+----------------+
-            |                |                |
-         HashMap          Hashtable        TreeMap
-            |
-       LinkedHashMap
-```
+![Java Collection Framework Hierarchy](imgs/img1.jpg)
 
 > **Interview Tip:** `Map` does **NOT** extend `Collection`. It is a completely separate hierarchy. This is one of the most common trick questions in Java interviews.
 
