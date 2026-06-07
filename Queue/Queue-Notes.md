@@ -21,18 +21,16 @@
 11. [PriorityQueue — In-Depth](#11-priorityqueue--in-depth)
 12. [ArrayDeque — In-Depth](#12-arraydeque--in-depth)
 13. [Deque — Double-Ended Queue](#13-deque--double-ended-queue)
-14. [BlockingQueue — Thread-Safe Queues](#14-blockingqueue--thread-safe-queues)
-15. [Queue with Custom Objects](#15-queue-with-custom-objects)
-16. [Null Handling](#16-null-handling)
-17. [Thread Safety](#17-thread-safety)
-18. [Performance — Time Complexity](#18-performance--time-complexity)
-19. [Queue vs Stack vs List](#19-queue-vs-stack-vs-list)
-20. [Practical Examples](#20-practical-examples)
-21. [Best Practices](#21-best-practices)
-22. [Common Mistakes Beginners Make](#22-common-mistakes-beginners-make)
-23. [Interview Questions and Answers](#23-interview-questions-and-answers)
-24. [Quick Reference Cheat Sheet](#24-quick-reference-cheat-sheet)
-25. [Summary](#25-summary)
+14. [Queue with Custom Objects](#14-queue-with-custom-objects)
+15. [Null Handling](#15-null-handling)
+16. [Thread Safety](#16-thread-safety)
+17. [Performance — Time Complexity](#17-performance--time-complexity)
+18. [Queue vs Stack vs List](#18-queue-vs-stack-vs-list)
+19. [Practical Examples](#19-practical-examples)
+20. [Best Practices](#20-best-practices)
+21. [Interview Questions and Answers](#21-interview-questions-and-answers)
+22. [Quick Reference Cheat Sheet](#22-quick-reference-cheat-sheet)
+23. [Summary](#23r-summary)
 
 ---
 
@@ -1097,102 +1095,7 @@ Remaining: [Task 2, Task 3]
 
 ---
 
-## 14. BlockingQueue — Thread-Safe Queues
-
-### What is BlockingQueue?
-
-`BlockingQueue` is a queue that **blocks** (waits) when:
-- You try to **take** from an **empty** queue — the thread waits until an element is available
-- You try to **put** into a **full** queue — the thread waits until space is available
-
-This makes it perfect for the **Producer-Consumer** pattern.
-
-```
-┌──────────┐     ┌─────────────────┐     ┌──────────┐
-│ Producer │────►│  BlockingQueue  │────►│ Consumer │
-│ (adds)   │     │  [A] [B] [C]   │     │ (takes)  │
-└──────────┘     └─────────────────┘     └──────────┘
-
-  If queue is FULL → Producer WAITS
-  If queue is EMPTY → Consumer WAITS
-```
-
-### Simple Analogy
-
-> **BlockingQueue** = A pizza restaurant with a shelf that holds at most 5 pizzas. The chef (producer) makes pizzas and puts them on the shelf. The delivery boy (consumer) picks up pizzas from the shelf. If the shelf is full, the chef waits. If the shelf is empty, the delivery boy waits.
-
-### BlockingQueue Methods
-
-| Operation | Throws Exception | Returns Special Value | Blocks | Times Out |
-|---|---|---|---|---|
-| **Insert** | `add(e)` | `offer(e)` | `put(e)` | `offer(e, time, unit)` |
-| **Remove** | `remove()` | `poll()` | `take()` | `poll(time, unit)` |
-| **Examine** | `element()` | `peek()` | — | — |
-
-### Common Implementations
-
-```java
-import java.util.concurrent.*;
-
-// Fixed capacity — blocks when full
-BlockingQueue<String> abq = new ArrayBlockingQueue<>(10);
-
-// Optionally bounded — default unlimited
-BlockingQueue<String> lbq = new LinkedBlockingQueue<>();
-BlockingQueue<String> lbq2 = new LinkedBlockingQueue<>(100); // bounded
-
-// Priority-based and thread-safe
-BlockingQueue<Integer> pbq = new PriorityBlockingQueue<>();
-```
-
-### Producer-Consumer Example
-
-```java
-import java.util.concurrent.*;
-
-public class ProducerConsumerDemo {
-    public static void main(String[] args) {
-        BlockingQueue<String> queue = new ArrayBlockingQueue<>(3);
-
-        // Producer thread
-        Thread producer = new Thread(() -> {
-            try {
-                queue.put("Pizza 1");
-                System.out.println("Produced: Pizza 1");
-                queue.put("Pizza 2");
-                System.out.println("Produced: Pizza 2");
-                queue.put("Pizza 3");
-                System.out.println("Produced: Pizza 3");
-                queue.put("Pizza 4"); // blocks until consumer takes one
-                System.out.println("Produced: Pizza 4");
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        });
-
-        // Consumer thread
-        Thread consumer = new Thread(() -> {
-            try {
-                Thread.sleep(1000); // simulate delay
-                System.out.println("Consumed: " + queue.take());
-                System.out.println("Consumed: " + queue.take());
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        });
-
-        producer.start();
-        consumer.start();
-    }
-}
-```
-
-> [!NOTE]
-> `BlockingQueue` is a **concurrent utility** from `java.util.concurrent`. It is mainly used in multi-threaded applications — you won't need it in simple single-threaded programs.
-
----
-
-## 15. Queue with Custom Objects
+## 14. Queue with Custom Objects
 
 ### Basic Example — Task Processing
 
@@ -1301,7 +1204,7 @@ Deploy (priority: 3)
 
 ---
 
-## 16. Null Handling
+## 15. Null Handling
 
 Null handling varies **by implementation**:
 
@@ -1340,7 +1243,7 @@ ad.add(null); // CRASH! NullPointerException
 
 ---
 
-## 17. Thread Safety
+## 16. Thread Safety
 
 **Queues are NOT thread-safe by default.** If multiple threads read and write to the same queue at the same time, data can become corrupted.
 
@@ -1386,7 +1289,7 @@ System.out.println(queue.poll()); // Alice
 
 ---
 
-## 18. Performance — Time Complexity
+## 17. Performance — Time Complexity
 
 ### LinkedList (as Queue)
 
@@ -1438,7 +1341,7 @@ PriorityQ     ★★           ★★          ★     ← O(log n) insert/remov
 
 ---
 
-## 19. Queue vs Stack vs List
+## 18. Queue vs Stack vs List
 
 | Feature | Queue | Stack (Deque) | List |
 |---|---|---|---|
@@ -1471,7 +1374,7 @@ List (Indexed):
 
 ---
 
-## 20. Practical Examples
+## 19. Practical Examples
 
 ### Example 1 — Printer Queue
 
@@ -1675,7 +1578,7 @@ Processing tasks by priority:
 
 ---
 
-## 21. Best Practices
+## 20. Best Practices
 
 ### Do
 
@@ -1707,110 +1610,7 @@ if (item != null) {
 
 ---
 
-## 22. Common Mistakes Beginners Make
-
-### Mistake 1 — Expecting PriorityQueue to Print in Sorted Order
-
-```java
-// WRONG assumption
-Queue<Integer> pq = new PriorityQueue<>();
-pq.add(30);
-pq.add(10);
-pq.add(20);
-System.out.println(pq); // [10, 30, 20] — NOT [10, 20, 30]!
-
-// CORRECT way to get sorted output
-while (!pq.isEmpty()) {
-    System.out.print(pq.poll() + " "); // 10 20 30 ✓
-}
-```
-
-### Mistake 2 — Adding null to PriorityQueue or ArrayDeque
-
-```java
-// WRONG — crashes
-Queue<String> pq = new PriorityQueue<>();
-pq.add(null); // NullPointerException!
-
-Queue<String> ad = new ArrayDeque<>();
-ad.add(null); // NullPointerException!
-
-// CORRECT — only LinkedList allows null (but avoid it anyway)
-Queue<String> ll = new LinkedList<>();
-ll.add(null); // works, but not recommended
-```
-
-### Mistake 3 — Using Stack Class Instead of ArrayDeque
-
-```java
-// WRONG — Stack is legacy, extends synchronized Vector
-Stack<String> stack = new Stack<>();
-stack.push("item");
-
-// CORRECT — ArrayDeque is the modern replacement
-Deque<String> stack = new ArrayDeque<>();
-stack.push("item");
-```
-
-### Mistake 4 — Not Providing Comparator for Custom Objects in PriorityQueue
-
-```java
-class Task {
-    String name;
-    Task(String name) { this.name = name; }
-}
-
-// WRONG — ClassCastException at runtime!
-Queue<Task> pq = new PriorityQueue<>();
-pq.add(new Task("A"));
-pq.add(new Task("B")); // CRASH! Task cannot be cast to Comparable
-
-// CORRECT — provide a Comparator
-Queue<Task> pq = new PriorityQueue<>(Comparator.comparing(t -> t.name));
-pq.add(new Task("A"));
-pq.add(new Task("B")); // works!
-```
-
-### Mistake 5 — Modifying a Queue During For-Each Iteration
-
-```java
-Queue<String> queue = new LinkedList<>(List.of("Alice", "Bob", "Charlie"));
-
-// WRONG — ConcurrentModificationException
-for (String name : queue) {
-    if (name.equals("Bob")) {
-        queue.remove(name); // CRASH!
-    }
-}
-
-// CORRECT — use Iterator
-Iterator<String> it = queue.iterator();
-while (it.hasNext()) {
-    if (it.next().equals("Bob")) {
-        it.remove(); // safe
-    }
-}
-
-// ALSO CORRECT — use removeIf (Java 8+)
-queue.removeIf(name -> name.equals("Bob"));
-```
-
-### Mistake 6 — Confusing poll() with remove() When Queue Is Empty
-
-```java
-Queue<String> empty = new LinkedList<>();
-
-// This returns null — no crash
-String result = empty.poll();
-System.out.println(result); // null
-
-// This CRASHES
-String result = empty.remove(); // NoSuchElementException!
-```
-
----
-
-## 23. Interview Questions and Answers
+## 21. Interview Questions and Answers
 
 **Q1. What is a Queue in Java?**
 
@@ -1949,7 +1749,7 @@ String result = empty.remove(); // NoSuchElementException!
 
 ---
 
-## 24. Quick Reference Cheat Sheet
+## 22. Quick Reference Cheat Sheet
 
 ```java
 import java.util.*;
@@ -2005,7 +1805,7 @@ Queue<String> q = new LinkedList<>(list);                  // list → queue
 
 ---
 
-## 25. Summary
+## 23. Summary
 
 ```
 Queue Collection in a Nutshell:
