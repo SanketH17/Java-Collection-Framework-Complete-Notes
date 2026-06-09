@@ -1,4 +1,4 @@
-# Java Queue Collection — Complete Beginner-Friendly Notes
+﻿# Java Queue Collection — Complete Beginner-Friendly Notes
 
 > Part of the [Java Collection Framework Notes](../README.md)
 > **For:** Java learners preparing for interviews (beginner to intermediate).
@@ -26,11 +26,10 @@
 16. [Thread Safety](#16-thread-safety)
 17. [Performance — Time Complexity](#17-performance--time-complexity)
 18. [Queue vs Stack vs List](#18-queue-vs-stack-vs-list)
-19. [Practical Examples](#19-practical-examples)
-20. [Best Practices](#20-best-practices)
-21. [Interview Questions and Answers](#21-interview-questions-and-answers)
-22. [Quick Reference Cheat Sheet](#22-quick-reference-cheat-sheet)
-23. [Summary](#23r-summary)
+19. [Best Practices](#19-best-practices)
+20. [Interview Questions and Answers](#20-interview-questions-and-answers)
+21. [Quick Reference Cheat Sheet](#21-quick-reference-cheat-sheet)
+22. [Summary](#22-summary)
 
 ---
 
@@ -127,20 +126,6 @@ Printing: Document A
 Printing: Document B
 Printing: Document C
 ```
-
-### Common Use Cases
-
-| Use Case | Why Queue? |
-|---|---|
-| Printer queue | Jobs are printed in the order they arrive |
-| Customer service | First caller gets served first |
-| Task scheduling (OS) | CPU processes tasks in arrival order |
-| Breadth-First Search (BFS) | Explores nodes level by level |
-| Message queues (Kafka, RabbitMQ) | Messages processed in order |
-| Rate limiting / throttling | Requests queued and released at a controlled rate |
-
-> **Bottom line:** Whenever you need to process items in the order they arrive, use a Queue.
-
 ---
 
 ## 3. Queue Interface Hierarchy
@@ -157,22 +142,17 @@ graph TD
     Queue["Queue (interface) ✅"]
     Set["Set (interface)"]
     Deque["Deque (interface)"]
-    BQ["BlockingQueue (interface)"]
 
     AL["ArrayList"]
     LL["LinkedList"]
     PQ["PriorityQueue"]
     AD["ArrayDeque"]
-    LBQ["LinkedBlockingQueue"]
-    ABQ["ArrayBlockingQueue"]
-    PBQ["PriorityBlockingQueue"]
 
     Iterable --> Collection
     Collection --> List
     Collection --> Queue
     Collection --> Set
     Queue --> Deque
-    Queue --> BQ
     Queue --> PQ
 
     List --> AL
@@ -180,90 +160,9 @@ graph TD
     Deque --> LL
     Deque --> AD
 
-    BQ --> LBQ
-    BQ --> ABQ
-    BQ --> PBQ
-
     style Queue fill:#4CAF50,stroke:#333,stroke-width:3px,color:#fff
     style Deque fill:#FF9800,color:#fff
-    style BQ fill:#9C27B0,color:#fff
 ```
-
-> [!IMPORTANT]
-> **Interview Point:** `Queue` is an **interface**, not a class. The most commonly used implementations are:
-> - **`LinkedList`** — general-purpose FIFO queue
-> - **`PriorityQueue`** — elements ordered by priority (natural order or Comparator)
-> - **`ArrayDeque`** — fastest general-purpose queue/stack (preferred over LinkedList and Stack)
-
-### Key Interfaces Extending Queue
-
-| Interface | Purpose |
-|---|---|
-| `Queue<E>` | Basic FIFO operations |
-| `Deque<E>` | Double-ended queue — add/remove from both ends |
-| `BlockingQueue<E>` | Thread-safe queue with blocking operations (waits when empty/full) |
-
----
-
-## 4. Types of Queues in Java
-
-### Overview
-
-Java provides several queue implementations, each designed for specific use cases.
-
-```mermaid
-graph TD
-    Q["Queue Interface"]
-    FIFO["FIFO Queues"]
-    PRI["Priority Queue"]
-    DE["Double-Ended (Deque)"]
-    BLK["Blocking Queues"]
-
-    LL["LinkedList"]
-    PQ["PriorityQueue"]
-    AD["ArrayDeque"]
-    LBQ["LinkedBlockingQueue"]
-    ABQ["ArrayBlockingQueue"]
-
-    Q --> FIFO
-    Q --> PRI
-    Q --> DE
-    Q --> BLK
-
-    FIFO --> LL
-    PRI --> PQ
-    DE --> AD
-    DE --> LL
-    BLK --> LBQ
-    BLK --> ABQ
-
-    style Q fill:#2196F3,color:#fff
-    style FIFO fill:#4CAF50,color:#fff
-    style PRI fill:#FF9800,color:#fff
-    style DE fill:#9C27B0,color:#fff
-    style BLK fill:#F44336,color:#fff
-```
-
-### Comparison Table
-
-| Implementation | Ordering | Bounded? | Null Allowed? | Thread-Safe? | Best For |
-|---|---|---|---|---|---|
-| `LinkedList` | FIFO (insertion order) | No | Yes | No | General-purpose queue |
-| `PriorityQueue` | Priority (sorted order) | No | **No** | No | Processing by priority |
-| `ArrayDeque` | FIFO or LIFO | No | **No** | No | Fast queue and stack |
-| `LinkedBlockingQueue` | FIFO | Optional | **No** | Yes | Producer-consumer pattern |
-| `ArrayBlockingQueue` | FIFO | Yes (fixed) | **No** | Yes | Bounded producer-consumer |
-| `PriorityBlockingQueue` | Priority | No | **No** | Yes | Thread-safe priority processing |
-
-### Simple Analogies for Each Type
-
-> **LinkedList Queue** = A regular line at a ticket counter. First come, first served.
->
-> **PriorityQueue** = A hospital emergency room. Patients are treated by severity, not arrival time. A heart attack patient gets treated before a headache patient, even if they arrived later.
->
-> **ArrayDeque** = A double-door elevator. People can enter and exit from both the front and the back.
->
-> **BlockingQueue** = A restaurant kitchen with a fixed-size order counter. If the counter is full, waiters wait. If the counter is empty, cooks wait.
 
 ---
 
@@ -972,19 +871,6 @@ After wrapping around (many adds and polls):
 > [!NOTE]
 > Unlike `ArrayList` which shifts elements on removal, `ArrayDeque` just moves the `head` pointer forward. This is why both add and remove are **O(1)**.
 
-### ArrayDeque vs LinkedList — Which to Use?
-
-| Feature | ArrayDeque | LinkedList |
-|---|---|---|
-| Internal structure | Circular array | Doubly linked nodes |
-| Memory per element | Low (~1 reference) | High (~3 references + node object) |
-| CPU cache performance | **Excellent** (contiguous memory) | Poor (nodes scattered in memory) |
-| Speed (add/remove ends) | **Faster** in practice | Slower due to cache misses |
-| Null elements | **Not allowed** | Allowed |
-| Use as Queue | **Preferred** ✅ | Works but slower |
-| Use as Stack | **Preferred** ✅ | Works but slower |
-| Use as List | No | Yes (implements `List`) |
-
 > [!TIP]
 > **Interview Point:** The Java documentation itself recommends `ArrayDeque` over `LinkedList` for queue and stack operations. Use `LinkedList` only when you need `List` interface features (like index-based access) or need to store `null` values.
 
@@ -1341,244 +1227,10 @@ PriorityQ     ★★           ★★          ★     ← O(log n) insert/remov
 
 ---
 
-## 18. Queue vs Stack vs List
-
-| Feature | Queue | Stack (Deque) | List |
-|---|---|---|---|
-| Ordering | FIFO | LIFO | By index |
-| Add | At back (`offer`) | At top (`push`) | At any index (`add`) |
-| Remove | From front (`poll`) | From top (`pop`) | From any index (`remove`) |
-| Access | Front only (`peek`) | Top only (`peek`) | Any index (`get`) |
-| Best implementation | `ArrayDeque` | `ArrayDeque` | `ArrayList` |
-| Use case | Task scheduling, BFS | Undo/redo, DFS | General-purpose storage |
-
-### Visual Comparison
-
-```
-Queue (FIFO):
-  IN → [C] [B] [A] → OUT
-  "First in, first out — like a line"
-
-Stack (LIFO):
-       ↕ IN/OUT
-      [C]  ← top
-      [B]
-      [A]
-  "Last in, first out — like a stack of plates"
-
-List (Indexed):
-  [A] [B] [C] [D] [E]
-   0   1   2   3   4
-  "Access any position by index"
-```
 
 ---
 
-## 19. Practical Examples
-
-### Example 1 — Printer Queue
-
-```java
-Queue<String> printerQueue = new ArrayDeque<>();
-printerQueue.add("Report.pdf");
-printerQueue.add("Invoice.pdf");
-printerQueue.add("Photo.jpg");
-
-System.out.println("Print queue: " + printerQueue);
-
-while (!printerQueue.isEmpty()) {
-    System.out.println("Printing: " + printerQueue.poll());
-}
-
-System.out.println("All jobs done!");
-```
-
-Output:
-
-```
-Print queue: [Report.pdf, Invoice.pdf, Photo.jpg]
-Printing: Report.pdf
-Printing: Invoice.pdf
-Printing: Photo.jpg
-All jobs done!
-```
-
-### Example 2 — Breadth-First Search (BFS)
-
-BFS is one of the **most common** uses of a queue in programming.
-
-```java
-import java.util.*;
-
-public class BFSExample {
-    public static void main(String[] args) {
-        // Simple graph represented as adjacency list
-        Map<String, List<String>> graph = new HashMap<>();
-        graph.put("A", List.of("B", "C"));
-        graph.put("B", List.of("D", "E"));
-        graph.put("C", List.of("F"));
-        graph.put("D", List.of());
-        graph.put("E", List.of());
-        graph.put("F", List.of());
-
-        // BFS traversal
-        Queue<String> queue = new ArrayDeque<>();
-        Set<String> visited = new HashSet<>();
-
-        queue.add("A");
-        visited.add("A");
-
-        while (!queue.isEmpty()) {
-            String node = queue.poll();
-            System.out.print(node + " ");
-
-            for (String neighbor : graph.get(node)) {
-                if (!visited.contains(neighbor)) {
-                    visited.add(neighbor);
-                    queue.add(neighbor);
-                }
-            }
-        }
-    }
-}
-```
-
-Output:
-
-```
-A B C D E F
-```
-
-```
-BFS explores level by level:
-Level 0:     [A]
-Level 1:     [B, C]
-Level 2:     [D, E, F]
-
-Queue state at each step:
-  Start:  [A]
-  Visit A: [B, C]        ← add A's neighbors
-  Visit B: [C, D, E]     ← add B's neighbors
-  Visit C: [D, E, F]     ← add C's neighbors
-  Visit D: [E, F]
-  Visit E: [F]
-  Visit F: []             ← done!
-```
-
-### Example 3 — Hot Potato Game (Circular Queue Simulation)
-
-```java
-Queue<String> circle = new LinkedList<>(
-    List.of("Alice", "Bob", "Charlie", "Dave", "Eve")
-);
-
-int passes = 0;
-while (circle.size() > 1) {
-    passes++;
-    if (passes % 3 == 0) {
-        String eliminated = circle.poll();
-        System.out.println(eliminated + " is eliminated!");
-    } else {
-        circle.add(circle.poll()); // move to back of line
-    }
-}
-
-System.out.println("Winner: " + circle.poll());
-```
-
-Output:
-
-```
-Charlie is eliminated!
-Alice is eliminated!
-Eve is eliminated!
-Bob is eliminated!
-Winner: Dave
-```
-
-### Example 4 — Recent Calls Counter
-
-```java
-class RecentCounter {
-    Queue<Integer> queue;
-
-    RecentCounter() {
-        queue = new LinkedList<>();
-    }
-
-    int ping(int t) {
-        queue.add(t);
-        // Remove calls older than 3000ms
-        while (queue.peek() < t - 3000) {
-            queue.poll();
-        }
-        return queue.size();
-    }
-}
-
-RecentCounter counter = new RecentCounter();
-System.out.println(counter.ping(1));      // 1
-System.out.println(counter.ping(100));    // 2
-System.out.println(counter.ping(3001));   // 3
-System.out.println(counter.ping(3002));   // 3 (call at time 1 dropped)
-```
-
-Output:
-
-```
-1
-2
-3
-3
-```
-
-### Example 5 — Task Scheduler with Priority
-
-```java
-class Task implements Comparable<Task> {
-    String name;
-    int priority; // lower = more urgent
-
-    Task(String name, int priority) {
-        this.name = name;
-        this.priority = priority;
-    }
-
-    @Override
-    public int compareTo(Task other) {
-        return Integer.compare(this.priority, other.priority);
-    }
-
-    public String toString() {
-        return name + " [P" + priority + "]";
-    }
-}
-
-Queue<Task> scheduler = new PriorityQueue<>();
-scheduler.add(new Task("Write report", 3));
-scheduler.add(new Task("Fix critical bug", 1));
-scheduler.add(new Task("Code review", 2));
-scheduler.add(new Task("Server is down!", 0));
-
-System.out.println("Processing tasks by priority:");
-while (!scheduler.isEmpty()) {
-    System.out.println("  → " + scheduler.poll());
-}
-```
-
-Output:
-
-```
-Processing tasks by priority:
-  → Server is down! [P0]
-  → Fix critical bug [P1]
-  → Code review [P2]
-  → Write report [P3]
-```
-
----
-
-## 20. Best Practices
+## 19. Best Practices
 
 ### Do
 
@@ -1610,7 +1262,7 @@ if (item != null) {
 
 ---
 
-## 21. Interview Questions and Answers
+## 20. Interview Questions and Answers
 
 **Q1. What is a Queue in Java?**
 
@@ -1749,7 +1401,7 @@ if (item != null) {
 
 ---
 
-## 22. Quick Reference Cheat Sheet
+## 21. Quick Reference Cheat Sheet
 
 ```java
 import java.util.*;
@@ -1804,79 +1456,3 @@ Queue<String> q = new LinkedList<>(list);                  // list → queue
 ```
 
 ---
-
-## 23. Summary
-
-```
-Queue Collection in a Nutshell:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  1. Queue is an interface for FIFO (First-In, First-Out) processing.
-  2. Core methods come in pairs: add/offer, remove/poll, element/peek.
-  3. ArrayDeque is the fastest general-purpose queue and stack.
-  4. PriorityQueue processes elements by priority (min-heap internally).
-  5. LinkedList works as a queue but ArrayDeque is preferred.
-  6. BlockingQueue is for thread-safe producer-consumer patterns.
-  7. Most implementations do NOT allow null values.
-  8. PriorityQueue does NOT iterate in sorted order — only poll() does.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-**When to use Queue:**
-- You need to process elements in the order they arrive (FIFO).
-- You are implementing BFS, task scheduling, or message processing.
-- You need a thread-safe producer-consumer pattern (BlockingQueue).
-- You need to process items by priority (PriorityQueue).
-
-**When NOT to use Queue:**
-- You need random access by index → use `ArrayList`.
-- You need to store unique elements → use `HashSet`.
-- You need key-value mapping → use `HashMap`.
-- You need sorted iteration → use `TreeSet` or sort a `List`.
-
-### Choosing the Right Queue Implementation
-
-```mermaid
-graph TD
-    Start["Need a Queue?"]
-    FIFO{"FIFO order?"}
-    Priority{"Priority-based?"}
-    Thread{"Multi-threaded?"}
-    Bounded{"Need bounding?"}
-    Block{"Need blocking?"}
-
-    ADeque["Use ArrayDeque ✅"]
-    PQ["Use PriorityQueue"]
-    PBQ["Use PriorityBlockingQueue"]
-    ABQ["Use ArrayBlockingQueue"]
-    LBQ["Use LinkedBlockingQueue"]
-    CLQ["Use ConcurrentLinkedQueue"]
-
-    Start --> FIFO
-    FIFO -->|Yes| Thread
-    FIFO -->|No| Priority
-
-    Priority -->|Yes| Thread
-    Priority -->|No — use PQ| PQ
-
-    Thread -->|No| ADeque
-    Thread -->|Yes| Block
-
-    Block -->|Yes| Bounded
-    Block -->|No| CLQ
-
-    Bounded -->|Yes| ABQ
-    Bounded -->|No| LBQ
-
-    Priority -->|Yes + Thread-Safe| PBQ
-
-    style ADeque fill:#4CAF50,color:#fff
-    style PQ fill:#FF9800,color:#fff
-    style ABQ fill:#2196F3,color:#fff
-    style LBQ fill:#2196F3,color:#fff
-    style CLQ fill:#9C27B0,color:#fff
-    style PBQ fill:#F44336,color:#fff
-```
-
----
-
-*Part of [Java Collection Framework Notes](../README.md).*
