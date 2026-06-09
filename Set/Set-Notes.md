@@ -21,7 +21,9 @@
 11. [HashSet vs LinkedHashSet vs TreeSet](#11-hashset-vs-linkedhashset-vs-treeset)
 12. [Performance — Time Complexity](#12-performance--time-complexity)
 13. [Interview Questions and Answers](#13-interview-questions-and-answers)
-14. [Summary](#14-summary)
+14. [LinkedHashSet — In-Depth](#14-linkedhashset--in-depth)
+15. [TreeSet — In-Depth](#15-treeset--in-depth)
+16. [Summary](#16-summary)
 
 ---
 
@@ -595,7 +597,371 @@ System.out.println(ts.tailSet(30));   // [30, 40, 50] — elements ≥ 30
 
 ---
 
-## 14. Summary
+## 14. LinkedHashSet — In-Depth
+
+### What is LinkedHashSet?
+
+`LinkedHashSet` is a `HashSet` that also **remembers the order** in which elements were inserted. It combines the speed of `HashSet` with **predictable iteration order**.
+
+```java
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+Set<String> set = new LinkedHashSet<>();
+set.add("Charlie");
+set.add("Alice");
+set.add("Bob");
+set.add("Alice");  // duplicate — ignored
+
+System.out.println(set);
+```
+
+Output:
+
+```
+[Charlie, Alice, Bob]
+```
+
+> Elements come out in the **exact order** they were first added. `"Alice"` appears at position 2, not at the end, because the second `add("Alice")` was ignored.
+
+### Simple Analogy
+
+> **HashSet** = A jar of unique coins thrown in randomly — you grab them out in no particular order.
+>
+> **LinkedHashSet** = A display case of unique coins placed one by one — they stay in the order you placed them.
+
+### Key Characteristics
+
+| Property | LinkedHashSet |
+|---|---|
+| Internal structure | Hash Table + Doubly Linked List |
+| Ordering | **Insertion order** |
+| Allows duplicates | No |
+| Allows null | Yes (one `null`) |
+| Thread-safe | No |
+| Performance | O(1) for add, remove, contains |
+| Extends | `HashSet` |
+
+### How It Works Internally
+
+LinkedHashSet is backed by a **hash table** (for fast lookups) plus a **doubly linked list** running through all entries (to maintain insertion order).
+
+```
+Hash Table (for O(1) lookup):
+┌────────┬────────┬────────┬────────┐
+│ Bucket │ Bucket │ Bucket │ Bucket │
+│   0    │   1    │   2    │   3    │
+│ "Bob"  │        │"Alice" │"Charlie"
+└────────┴────────┴────────┴────────┘
+
+Linked List (for insertion order):
+  "Charlie" ↔ "Alice" ↔ "Bob"
+  (first)                (last)
+```
+
+> [!NOTE]
+> This extra linked list is why `LinkedHashSet` uses slightly more memory than `HashSet`, but it guarantees that iteration follows insertion order.
+
+### Constructors
+
+```java
+// 1. Empty LinkedHashSet
+Set<String> set1 = new LinkedHashSet<>();
+
+// 2. With initial capacity
+Set<String> set2 = new LinkedHashSet<>(50);
+
+// 3. With initial capacity and load factor
+Set<String> set3 = new LinkedHashSet<>(50, 0.75f);
+
+// 4. From another collection (preserves that collection's order)
+List<String> names = List.of("Alice", "Bob", "Charlie");
+Set<String> set4 = new LinkedHashSet<>(names);
+System.out.println(set4); // [Alice, Bob, Charlie]
+```
+
+### Commonly Used Methods
+
+LinkedHashSet inherits all methods from `HashSet`. There are **no new methods** — the only difference is ordering behavior.
+
+| Method | What It Does | Time |
+|---|---|---|
+| `add(e)` | Adds element, maintains insertion order | O(1) |
+| `remove(e)` | Removes element | O(1) |
+| `contains(e)` | Checks if element exists | O(1) |
+| `size()` | Number of elements | O(1) |
+| `isEmpty()` | Is the set empty? | O(1) |
+| `clear()` | Removes all elements | O(n) |
+| `iterator()` | Returns iterator in **insertion order** | O(1) |
+
+### Practical Example — Removing Duplicates While Preserving Order
+
+This is the **most common use case** for `LinkedHashSet`.
+
+```java
+List<String> cities = List.of("Mumbai", "Delhi", "Mumbai", "Bangalore", "Delhi", "Chennai");
+
+// Remove duplicates but keep the order they first appeared
+Set<String> unique = new LinkedHashSet<>(cities);
+
+System.out.println(unique);
+```
+
+Output:
+
+```
+[Mumbai, Delhi, Bangalore, Chennai]
+```
+
+> With `HashSet`, the order would be unpredictable. With `LinkedHashSet`, the first occurrence order is preserved.
+
+### Practical Example — Maintaining a Recent History
+
+```java
+LinkedHashSet<String> recentSearches = new LinkedHashSet<>();
+recentSearches.add("Java Collections");
+recentSearches.add("LinkedHashSet");
+recentSearches.add("TreeSet");
+recentSearches.add("Java Collections"); // duplicate — not added again
+
+System.out.println("Recent searches: " + recentSearches);
+```
+
+Output:
+
+```
+Recent searches: [Java Collections, LinkedHashSet, TreeSet]
+```
+
+> [!TIP]
+> **When to use LinkedHashSet:**
+> - You need unique elements **and** insertion order.
+> - You are removing duplicates from a list but want to keep original order.
+> - You need a cache-like structure where order matters.
+
+---
+
+## 15. TreeSet — In-Depth
+
+### What is TreeSet?
+
+`TreeSet` is a `Set` implementation that keeps elements in **sorted order** (ascending by default). It is backed by a **Red-Black Tree** — a self-balancing binary search tree.
+
+```java
+import java.util.TreeSet;
+import java.util.Set;
+
+Set<Integer> numbers = new TreeSet<>();
+numbers.add(40);
+numbers.add(10);
+numbers.add(30);
+numbers.add(20);
+
+System.out.println(numbers);
+```
+
+Output:
+
+```
+[10, 20, 30, 40]
+```
+
+> No matter what order you add elements, they are always stored **sorted**.
+
+### Simple Analogy
+
+> **HashSet** = A pile of books on a desk — no particular order, but you can quickly check if a book is there.
+>
+> **TreeSet** = A bookshelf sorted by title — you can find any book and also easily find "all books from A to M".
+
+### Key Characteristics
+
+| Property | TreeSet |
+|---|---|
+| Internal structure | Red-Black Tree (self-balancing BST) |
+| Ordering | **Sorted** (natural order or custom Comparator) |
+| Allows duplicates | No |
+| Allows null | **No** — throws `NullPointerException` |
+| Thread-safe | No |
+| Performance | O(log n) for add, remove, contains |
+| Implements | `NavigableSet`, `SortedSet`, `Set` |
+
+### How It Works Internally
+
+TreeSet uses a **Red-Black Tree** — a balanced binary tree where every node is colored either red or black to maintain balance.
+
+```
+Adding: 40, 10, 30, 20
+
+Resulting Red-Black Tree:
+
+           30 (Black)
+          /  \
+    10 (Red)  40 (Black)
+      \
+     20 (Black)
+
+In-order traversal gives: 10, 20, 30, 40 (sorted!)
+```
+
+> [!NOTE]
+> You don't need to understand Red-Black Tree balancing rules for interviews. Just know that it keeps the tree balanced so all operations stay at O(log n).
+
+### Constructors
+
+```java
+// 1. Empty TreeSet — natural ordering (ascending)
+TreeSet<Integer> set1 = new TreeSet<>();
+
+// 2. With custom Comparator — descending order
+TreeSet<Integer> set2 = new TreeSet<>(Comparator.reverseOrder());
+set2.add(10);
+set2.add(30);
+set2.add(20);
+System.out.println(set2); // [30, 20, 10]
+
+// 3. From another collection
+List<Integer> nums = List.of(5, 3, 1, 4, 2);
+TreeSet<Integer> set3 = new TreeSet<>(nums);
+System.out.println(set3); // [1, 2, 3, 4, 5]
+
+// 4. From another SortedSet
+TreeSet<Integer> set4 = new TreeSet<>(set3);
+```
+
+### Commonly Used Methods
+
+TreeSet has all standard `Set` methods **plus** navigation methods from `NavigableSet`.
+
+#### 🟢 Standard Set Methods
+
+| Method | What It Does | Time |
+|---|---|---|
+| `add(e)` | Adds element in sorted position | O(log n) |
+| `remove(e)` | Removes element | O(log n) |
+| `contains(e)` | Checks if element exists | O(log n) |
+| `size()` | Number of elements | O(1) |
+| `isEmpty()` | Is the set empty? | O(1) |
+| `clear()` | Removes all elements | O(n) |
+
+#### 🔵 Navigation Methods (TreeSet-specific)
+
+| Method | What It Does | Example (set = {10,20,30,40,50}) |
+|---|---|---|
+| `first()` | Returns the **smallest** element | `10` |
+| `last()` | Returns the **largest** element | `50` |
+| `lower(e)` | Greatest element **strictly less** than e | `lower(30)` → `20` |
+| `higher(e)` | Smallest element **strictly greater** than e | `higher(30)` → `40` |
+| `floor(e)` | Greatest element **≤** e | `floor(25)` → `20` |
+| `ceiling(e)` | Smallest element **≥** e | `ceiling(25)` → `30` |
+| `pollFirst()` | Removes and returns the **smallest** | removes `10` |
+| `pollLast()` | Removes and returns the **largest** | removes `50` |
+
+```java
+TreeSet<Integer> ts = new TreeSet<>(Set.of(10, 20, 30, 40, 50));
+
+System.out.println("First: " + ts.first());       // 10
+System.out.println("Last: " + ts.last());          // 50
+System.out.println("Lower(30): " + ts.lower(30));  // 20
+System.out.println("Higher(30): " + ts.higher(30));// 40
+System.out.println("Floor(25): " + ts.floor(25));  // 20
+System.out.println("Ceiling(25): " + ts.ceiling(25));// 30
+```
+
+Output:
+
+```
+First: 10
+Last: 50
+Lower(30): 20
+Higher(30): 40
+Floor(25): 20
+Ceiling(25): 30
+```
+
+#### 🟣 Range View Methods
+
+| Method | What It Does | Example (set = {10,20,30,40,50}) |
+|---|---|---|
+| `headSet(e)` | Elements **< e** | `headSet(30)` → `[10, 20]` |
+| `headSet(e, true)` | Elements **≤ e** | `headSet(30, true)` → `[10, 20, 30]` |
+| `tailSet(e)` | Elements **≥ e** | `tailSet(30)` → `[30, 40, 50]` |
+| `tailSet(e, false)` | Elements **> e** | `tailSet(30, false)` → `[40, 50]` |
+| `subSet(from, to)` | Elements **≥ from** and **< to** | `subSet(20, 40)` → `[20, 30]` |
+
+```java
+TreeSet<Integer> ts = new TreeSet<>(Set.of(10, 20, 30, 40, 50));
+
+System.out.println(ts.headSet(30));        // [10, 20]
+System.out.println(ts.headSet(30, true));  // [10, 20, 30]
+System.out.println(ts.tailSet(30));        // [30, 40, 50]
+System.out.println(ts.subSet(20, 40));     // [20, 30]
+```
+
+Output:
+
+```
+[10, 20]
+[10, 20, 30]
+[30, 40, 50]
+[20, 30]
+```
+
+### Custom Sorting with Comparator
+
+```java
+// Sort strings by length — shortest first
+TreeSet<String> set = new TreeSet<>(Comparator.comparingInt(String::length));
+set.add("Banana");
+set.add("Fig");
+set.add("Kiwi");
+set.add("Watermelon");
+
+System.out.println(set);
+```
+
+Output:
+
+```
+[Fig, Kiwi, Banana, Watermelon]
+```
+
+> [!IMPORTANT]
+> **Interview Point:** If you add custom objects to a `TreeSet` without providing a `Comparator` and the class doesn't implement `Comparable`, you get `ClassCastException` at runtime.
+
+### Practical Example — Finding Students in a Score Range
+
+```java
+TreeSet<Integer> scores = new TreeSet<>(Set.of(45, 67, 72, 85, 91, 55, 38));
+
+// Students who scored between 50 and 80
+System.out.println("Scores 50-80: " + scores.subSet(50, true, 80, true));
+
+// Top scorer
+System.out.println("Highest: " + scores.last());
+
+// Lowest scorer
+System.out.println("Lowest: " + scores.first());
+```
+
+Output:
+
+```
+Scores 50-80: [55, 67, 72]
+Highest: 91
+Lowest: 38
+```
+
+> [!TIP]
+> **When to use TreeSet:**
+> - You need elements to be always **sorted**.
+> - You need **range queries** (headSet, tailSet, subSet).
+> - You need `first()`, `last()`, `floor()`, `ceiling()` operations.
+> - You don't need `null` values.
+
+---
+
+## 16. Summary
 
 ```
 Set Interface in a Nutshell:
